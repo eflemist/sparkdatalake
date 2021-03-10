@@ -52,6 +52,8 @@ def process_song_data(spark, input_data, output_data):
                                  FROM songs_data_tbl sdt     
                              """)
     
+    songs_table = songs_table.distinct()
+    
     #print(songs_table.show())
     # write songs table to parquet files partitioned by year and artist
     song_tbl_file = output_data + "song_table.parquet"
@@ -65,6 +67,8 @@ def process_song_data(spark, input_data, output_data):
                                       sdt.artist_longitude
                                  FROM songs_data_tbl sdt     
                              """)
+    
+    artists_table = artists_table.distinct()
     
     # write artists table to parquet files
     artist_tbl_file = output_data + "artist_table.parquet"
@@ -130,7 +134,9 @@ def process_log_data(spark, input_data, output_data):
                                       tdt.hour
                                  FROM times_data_tbl tdt     
                              """)
-                                  
+    
+    times_table = times_table.distinct()
+    
     # write time table to parquet files partitioned by year and month
     time_tbl_file = output_data + "times_table.parquet"
     times_table.write.partitionBy("year","month").mode('overwrite').parquet(time_tbl_file)
@@ -175,7 +181,9 @@ def process_log_data(spark, input_data, output_data):
                                  JOIN times_data_tbl tdt
                                    ON spdt.start_time = tdt.date    
                              """)
-
+ 
+    songplays_table = songplays_table.distinct()
+    
     # write songplays table to parquet files partitioned by year and month
     songplays_tbl_file = output_data + "songplays_table.parquet"
     songplays_table.write.partitionBy("year","month").mode('overwrite').parquet(songplays_tbl_file)
